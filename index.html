@@ -43,8 +43,8 @@
           const route = response.routes[0].overview_path;
 
           // Total distance to find (100 miles in meters)
-          const distanceTravelled = 600 * 1609.34;
-          let distanceCovered = 0;
+          const milesCovered = 600;
+          const distanceTravelled = (milesCovered * 1609.34).toFixed(0);
 
           // Compute total route distance (in meters)
           let totalRouteDistance = 0;
@@ -57,10 +57,10 @@
           document.getElementById("progressBar").style.width = `${progressPercent}%`;
 
           const milesTotal = (totalRouteDistance / 1609.34).toFixed(0);
-          const milesCovered = (distanceTravelled / 1609.34).toFixed(0);
+          
           document.getElementById("progressLabel").textContent = `${milesCovered} mi of ${milesTotal} mi`;
 
-
+          let distanceCovered = 0;
           for (let i = 1; i < route.length; i++) {
             const segmentDistance = google.maps.geometry.spherical.computeDistanceBetween(route[i - 1], route[i]);
             if (distanceCovered + segmentDistance >= distanceTravelled) {
