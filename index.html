@@ -1,27 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Barwood Charity LeJog Challenge</title>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBK9A_1G5soH72d6EFnLcwD4bq-tdA2YlE&libraries=geometry">
-  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barwood Charity LeJog Challenge - Land's End to John o' Groats</title>
+  
+  <!-- Meta tags for SEO and social sharing -->
+  <meta name="description" content="Track our charity indoor cycling challenge from Land's End to John o' Groats. Support Barwood's fundraising effort!">
+  <meta name="keywords" content="charity, cycling, LeJog, Barwood, fundraising">
+  <meta property="og:title" content="Barwood Charity LeJog Challenge">
+  <meta property="og:description" content="Track our charity indoor cycling challenge from Land's End to John o' Groats">
+  <meta property="og:image" content="./bc-logo.svg">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="./bc-logo.svg">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="styles.css">
+  
+  <!-- Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBK9A_1G5soH72d6EFnLcwD4bq-tdA2YlE&libraries=geometry" async defer></script>
+
+  <!-- Structured data for SEO -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": "Barwood Charity LeJog Challenge",
+      "description": "Indoor cycling challenge from Land's End to John o' Groats",
+      "eventStatus": "EventScheduled",
+      "eventAttendanceMode": "OnlineEventAttendanceMode",
+      "location": {
+        "@type": "VirtualLocation",
+        "name": "Barwood Office"
+      }
+    }
+  </script>
 </head>
 
 <body>
-  <div id="map"></div>
+  <header class="sr-only">
+    <h1>Barwood Charity LeJog Challenge</h1>
+  </header>
 
-  <div id="progressBox">
-    <div id="boxHeader">
-      <img src="./bc-logo.svg">
+  <main>
+    <div id="map" aria-label="Route map from Land's End to John o' Groats"></div>
+    <div id="progressBox" role="complementary" aria-label="Challenge progress">
+      <div id="boxHeader">
+        <img src="./bc-logo.svg" alt="Barwood Charity Logo" width="150" height="50">
+      </div>
+      <div id="Content1" role="heading" aria-level="2">
+        Charity office indoor cycling challenge
+      </div>
+      <div id="progressLabel" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span>Calculating progress...</span>
+      </div>
+      <div id="progressBarContainer" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="progressBar"></div>
+      </div>
     </div>
-    <div id="Content1">Charity office indoor cycling challenge</div>
-    <div id="progressLabel">Calculating...</div>
-    <div id="progressBarContainer">
-      <div id="progressBar"></div>
-    </div>
-  </div>
+  </main>
 
+  <footer class="sr-only">
+    <p>© 2025 Barwood Charity. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts -->
   <script src="./gMaps.js"></script>
 </body>
 

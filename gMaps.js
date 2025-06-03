@@ -1,70 +1,129 @@
-function initMap() {
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 6,
-        center: { lat: 55, lng: -4 },
-        disableDefaultUI: true,
+/** @type {number} Miles already cycled */
+const MILES_COVERED = 600;
+/** @type {number} Conversion factor from miles to meters */
+const METERS_PER_MILE = 1609.34;
+/** @type {string} Starting point of the journey */
+const ORIGIN = "Cornwall, Land's End, Penzance TR19 7AA";
+/** @type {string} End point of the journey */
+const DESTINATION = "John o' Groats, UK";
+/** @type {Object} Marker configuration */
+const MARKER_CONFIG = {
+  url: "https://maps.google.com/mapfiles/kml/shapes/cycling.png",
+  size: 32
+};
+
+/**
+ * Creates and returns a Google Maps instance
+ * @returns {google.maps.Map}
+ */
+function createMap() {
+  const mapElement = document.getElementById("map");
+  if (!mapElement) {
+    throw new Error("Map element not found");
+  }
+  
+  return new google.maps.Map(mapElement, {
+    zoom: 6,
+    center: { lat: 55, lng: -4 },
+    disableDefaultUI: true,
+  });
+}
+
+/**
+ * Calculates the total distance of the route
+ * @param {Array<google.maps.LatLng>} route - Array of route points
+ * @returns {number} Total distance in meters
+ */
+function calculateTotalDistance(route) {
+  return route.reduce((total, point, index) => {
+    if (index === 0) return 0;
+    return total + google.maps.geometry.spherical.computeDistanceBetween(route[index - 1], point);
+  }, 0);
+}
+
+/**
+ * Updates the progress UI elements
+ * @param {number} distanceTravelled - Distance covered in meters
+ * @param {number} totalDistance - Total route distance in meters
+ */
+function updateProgressUI(distanceTravelled, totalDistance) {
+  const progressBar = document.getElementById("progressBar");
+  const progressLabel = document.getElementById("progressLabel");
+  
+  if (!progressBar || !progressLabel) {
+    console.error("Progress UI elements not found");
+    return;
+  }
+
+  const progressPercent = (distanceTravelled / totalDistance) * 100;
+  progressBar.style.width = `${progressPercent}%`;
+  
+  const milesTotal = Math.round(totalDistance / METERS_PER_MILE);
+  progressLabel.textContent = `${MILES_COVERED} mi of ${milesTotal} mi`;
+}
+
+/**
+ * Places a marker at the current progress point
+ * @param {google.maps.Map} map - Google Maps instance
+ * @param {Array<google.maps.LatLng>} route - Array of route points
+ * @param {number} distanceTravelled - Distance covered in meters
+ */
+function placeProgressMarker(map, route, distanceTravelled) {
+  let distanceCovered = 0;
+  
+  for (let i = 1; i < route.length; i++) {
+    const segmentDistance = google.maps.geometry.spherical.computeDistanceBetween(route[i - 1], route[i]);
+    if (distanceCovered + segmentDistance >= distanceTravelled) {
+      const overshoot = distanceTravelled - distanceCovered;
+      const heading = google.maps.geometry.spherical.computeHeading(route[i - 1], route[i]);
+      const markerPosition = google.maps.geometry.spherical.computeOffset(route[i - 1], overshoot, heading);
+      
+      new google.maps.Marker({
+        position: markerPosition,
+        map,
+        icon: {
+          url: MARKER_CONFIG.url,
+          scaledSize: new google.maps.Size(MARKER_CONFIG.size, MARKER_CONFIG.size),
+        },
+        title: "Distance Travelled"
       });
-
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer({ map });
-
-      directionsService.route({
-        origin: "Cornwall, Land's End, Penzance TR19 7AA",
-        destination: "John o' Groats, UK",
-        travelMode: google.maps.TravelMode.BICYCLING,
-      }, (response, status) => {
-        if (status === "OK") {
-          directionsRenderer.setDirections(response);
-
-          // Get full polyline path
-          const route = response.routes[0].overview_path;
-
-          // Total distance to find (100 miles in meters)
-          const milesCovered = 600;
-          const distanceTravelled = (milesCovered * 1609.34).toFixed(0);
-
-          // Compute total route distance (in meters)
-          let totalRouteDistance = 0;
-          for (let i = 1; i < route.length; i++) {
-            totalRouteDistance += google.maps.geometry.spherical.computeDistanceBetween(route[i - 1], route[i]);
-          }
-
-          // Update progress bar
-          const progressPercent = (distanceTravelled / totalRouteDistance) * 100;
-          document.getElementById("progressBar").style.width = `${progressPercent}%`;
-
-          const milesTotal = (totalRouteDistance / 1609.34).toFixed(0);
-          
-          document.getElementById("progressLabel").textContent = `${milesCovered} mi of ${milesTotal} mi`;
-
-          let distanceCovered = 0;
-          for (let i = 1; i < route.length; i++) {
-            const segmentDistance = google.maps.geometry.spherical.computeDistanceBetween(route[i - 1], route[i]);
-            if (distanceCovered + segmentDistance >= distanceTravelled) {
-              const overshoot = distanceTravelled - distanceCovered;
-              const heading = google.maps.geometry.spherical.computeHeading(route[i - 1], route[i]);
-              const markerPosition = google.maps.geometry.spherical.computeOffset(route[i - 1], overshoot, heading);
-
-              new google.maps.Marker({
-                position: markerPosition,
-                map,
-                icon: {
-                  url: "https://maps.google.com/mapfiles/kml/shapes/cycling.png", // Bike icon
-                  scaledSize: new google.maps.Size(32, 32), // Optional: resize the icon
-                },
-                title: "Distance Travelled"
-              });
-
-
-              break;
-            }
-            distanceCovered += segmentDistance;
-          }
-
-        } else {
-          alert("Directions request failed due to " + status);
-        }
-      });
+      break;
     }
+    distanceCovered += segmentDistance;
+  }
+}
 
-    window.onload = initMap;
+/**
+ * Initializes the map and sets up the route
+ */
+async function initMap() {
+  try {
+    const map = createMap();
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer({ map });
+
+    directionsService.route({
+      origin: ORIGIN,
+      destination: DESTINATION,
+      travelMode: google.maps.TravelMode.BICYCLING,
+    }, (response, status) => {
+      if (status !== "OK") {
+        throw new Error(`Directions request failed: ${status}`);
+      }
+
+      directionsRenderer.setDirections(response);
+      const route = response.routes[0].overview_path;
+      
+      const distanceTravelled = MILES_COVERED * METERS_PER_MILE;
+      const totalRouteDistance = calculateTotalDistance(route);
+      
+      updateProgressUI(distanceTravelled, totalRouteDistance);
+      placeProgressMarker(map, route, distanceTravelled);
+    });
+  } catch (error) {
+    console.error("Failed to initialize map:", error);
+    document.getElementById("progressLabel").textContent = "Failed to load map";
+  }
+}
+
+window.onload = initMap;
