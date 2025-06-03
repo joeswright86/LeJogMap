@@ -1,4 +1,4 @@
-/* Reset defaults */
+/* Reset and base styles */
 * {
   margin: 0;
   padding: 0;
@@ -6,7 +6,7 @@
 }
 
 html, body {
-  height: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -16,13 +16,16 @@ body {
 }
 
 main {
-  flex: 1;
   position: relative;
-  min-height: 0;
+  flex: 1;
+  height: calc(100vh - 0px); /* Adjust if header/footer become visible */
+  overflow: hidden;
 }
 
 #map {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
 }
@@ -31,6 +34,7 @@ main {
   position: absolute;
   top: 20px;
   left: 20px;
+  z-index: 1;
   background: white;
   padding: 15px;
   border-radius: 8px;
