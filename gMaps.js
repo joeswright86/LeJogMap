@@ -5,7 +5,7 @@ const METERS_PER_MILE = 1609.34;
 /** @type {string} Starting point of the journey */
 const ORIGIN = "Cornwall, Land's End, Penzance TR19 7AA";
 /** @type {string} End point of the journey */
-const DESTINATION = "John o' Groats, UK";
+const DESTINATION = "John o' Groats, Wick KW1 4YR, United Kingdom";
 /** @type {Object} Marker configuration */
 const MARKER_CONFIG = {
   url: "https://maps.google.com/mapfiles/kml/shapes/cycling.png",
@@ -128,6 +128,7 @@ async function initMap() {
 
 
 window.onload = initMap;
+
 
 
 
