@@ -1,5 +1,5 @@
 /** @type {number} Miles already cycled */
-const MILES_COVERED = 600;
+const MILES_COVERED = 263;
 /** @type {number} Conversion factor from miles to meters */
 const METERS_PER_MILE = 1609.34;
 /** @type {string} Starting point of the journey */
@@ -128,3 +128,4 @@ async function initMap() {
 
 
 window.onload = initMap;
+
