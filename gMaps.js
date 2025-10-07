@@ -69,7 +69,7 @@ function updateProgressUI(distanceTravelled, totalDistance) {
  * @param {number} distanceTravelled - Distance covered in meters
  */
 function placeProgressMarker(map, route, distanceTravelled) {
-  let distanceCovered = 0;
+  let distanceCovered = 263;
   
   for (let i = 1; i < route.length; i++) {
     const segmentDistance = google.maps.geometry.spherical.computeDistanceBetween(route[i - 1], route[i]);
@@ -125,5 +125,6 @@ async function initMap() {
     document.getElementById("progressLabel").textContent = "Failed to load map";
   }
 }
+
 
 window.onload = initMap;
